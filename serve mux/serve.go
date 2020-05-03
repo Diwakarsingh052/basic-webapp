@@ -24,8 +24,14 @@ func handleFunc(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	http.HandleFunc("/", handleFunc)
+	mux:=&http.ServeMux{}
+	mux.HandleFunc("/",handleFunc)
+
+	//serve mux routes your requests and
+	//http.HandleFunc also uses ServeMux
+
+	//http.HandleFunc("/", handleFunc)
 	//handle func actually uses serve mux video 3.4
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", mux) //nil replaced by mux
 
 }
