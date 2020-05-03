@@ -31,3 +31,5 @@ func main() {
 		panic(err)
 	}
 }
+
+//more example Cast_4 Ex3
