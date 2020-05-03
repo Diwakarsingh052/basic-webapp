@@ -2,30 +2,27 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
-func handleFunc(w http.ResponseWriter, r *http.Request) {
+func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "text/html")
-	//search for *content type* on google for all other content types
+	fmt.Fprint(w, `<h1> Welcome to my Site </h1>`)
+}
 
-	if r.URL.Path == "/" {
-		fmt.Fprint(w, `<h1> Welcome to my Site </h1>`)
-	} else if r.URL.Path == "/contact" {
-		fmt.Fprint(w, `<h1>To get in touch mail me
+func contact(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "text/html")
+	fmt.Fprint(w, `<h1>To get in touch mail me
 		<a href="mailto:diwakarsingh052@gmail.com"> diwakarsingh052@gmail.com </a>
 		</h1>`)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, "<h1>Oops This page does not exist here</h1>")
-	}
-
 }
 
 func main() {
 
-	http.HandleFunc("/", handleFunc)
-	//handle func actually uses serve mux video 3.4
-	http.ListenAndServe(":8080", nil)
+	r := mux.NewRouter()
+	r.HandleFunc("/", home)
+	r.HandleFunc("/contact", contact)
+	http.ListenAndServe(":8080", r)
 
 }
