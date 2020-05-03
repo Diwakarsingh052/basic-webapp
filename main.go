@@ -14,7 +14,7 @@ var (
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "text/html")
-	if err := homeView.Template.ExecuteTemplate(w, homeView.Layout, nil); err != nil {
+	if err := homeView.Render(w, nil); err != nil {
 		//nil because we are not writing any data
 		panic(err)
 	}
@@ -22,7 +22,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "text/html")
-	if err := contactView.Template.ExecuteTemplate(w, contactView.Layout, nil); err != nil {
+	if err := contactView.Render(w, nil); err != nil {
 		panic(err)
 	}
 }
