@@ -45,9 +45,10 @@ func main() {
 	r := mux.NewRouter()
 
 	r.NotFoundHandler = http.HandlerFunc(notfound)
-	r.HandleFunc("/", home)
-	r.HandleFunc("/contact", contact)
-	r.HandleFunc("/signup", usersC.New)
+	r.HandleFunc("/", home).Methods("GET") //METHOD- here we specify which method we are going to use for a particular endpoint. By default all
+	r.HandleFunc("/contact", contact).Methods("GET")
+	r.HandleFunc("/signup", usersC.New).Methods("GET")
+	r.HandleFunc("/signup", usersC.Create).Methods("POST")
 	http.ListenAndServe(":8080", r)
 
 }
