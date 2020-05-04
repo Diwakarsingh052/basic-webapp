@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"webdev/views"
 )
@@ -13,7 +14,7 @@ type SignupForm struct {
 
 func NewUsers() *Users {
 	return &Users{
-		NewView: views.NewView("bootstrap", "views/users/new.gohtml"),
+		NewView: views.NewView("bootstrap", "users/new"),
 	}
 }
 
@@ -25,7 +26,7 @@ type Users struct {
 // GET /signup
 func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 	if err := u.NewView.Render(w, nil); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
@@ -36,7 +37,7 @@ func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	var form SignupForm
 	if err := parseForm(r, &form); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	fmt.Fprintln(w, form)
