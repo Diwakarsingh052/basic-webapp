@@ -28,7 +28,7 @@ type View struct {
 	Layout   string
 }
 
-//REnder is used to render the view with predifined layout
+//Render is used to render the view with predifined layout
 func (v *View) Render(w http.ResponseWriter, data interface{}) error {
 	return v.Template.ExecuteTemplate(w, v.Layout, data)
 }
