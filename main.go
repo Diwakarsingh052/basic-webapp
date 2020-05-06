@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"net/http"
 	"webdev/controllers"
+	"webdev/models"
 )
 
 func notfound(w http.ResponseWriter, r *http.Request) {
@@ -13,10 +15,28 @@ func notfound(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Oops Page not Found</h1>")
 }
 
-func main() {
+const (
+	host     = "localhost"
+	port     = 5432
+	user     = "diwakar"
+	password = "root"
+	dbname   = "website"
+)
 
+func main() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname,
+	)
+	us, err := models.NewUserService(psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer us.Close()
+
+	//us.DestructiveReset()
+	us.AutoMigrate()
 	staticC := controllers.NewStatic()
-	usersC := controllers.NewUsers()
+	usersC := controllers.NewUsers(us)
 	r := mux.NewRouter()
 
 	r.NotFoundHandler = http.HandlerFunc(notfound)

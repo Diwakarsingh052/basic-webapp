@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer us.Close()
 	us.DestructiveReset()
 	user := models.User{
 		Name:  "Dev",
