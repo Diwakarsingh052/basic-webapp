@@ -13,6 +13,7 @@ type UserService struct {
 
 var (
 	ErrorNotFound = errors.New("models:resource not found")
+	ErrInvalidId  = errors.New("models:Id Provided was invalid")
 )
 
 func NewUserService(connectionInfo string) (*UserService, error) {
@@ -35,16 +36,29 @@ func NewUserService(connectionInfo string) (*UserService, error) {
 //3 -nil, otherError
 func (us *UserService) ByID(id uint) (*User, error) {
 	var user User
-	err := us.db.Where("id=?", id).First(&user).Error
+	db := us.db.Where("id=?", id)
+	err := first(db, &user)
+	return &user, err
+}
 
-	switch err {
-	case nil:
-		return &user, nil
-	case gorm.ErrRecordNotFound:
-		return nil, ErrorNotFound
-	default:
-		return nil, err
+//looks up the user with email address and returns the user
+func (us *UserService) ByEmail(email string) (*User, error) {
+	var user User
+	db := us.db.Where("email=?", email)
+	err := first(db, &user)
+	return &user, err
+
+}
+
+//first will query using the provided gorm.DB and it will
+//get the first item returned and place into dst
+func first(db *gorm.DB, dst interface{}) error {
+	err := db.First(dst).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return ErrorNotFound
 	}
+	return err
 }
 
 //Create will create the user and backfill data
@@ -52,6 +66,20 @@ func (us *UserService) ByID(id uint) (*User, error) {
 //and return error using gorm when we have one
 func (us *UserService) Create(user *User) error {
 	return us.db.Create(user).Error
+}
+
+//update will update the provided user with all data
+func (us *UserService) Update(user *User) error {
+	return us.db.Save(user).Error
+}
+
+//Delete will delete the data
+func (us *UserService) Delete(id uint) error {
+	if id == 0 {
+		return ErrInvalidId
+	}
+	user := User{Model: gorm.Model{ID: id}}
+	return us.db.Delete(&user).Error
 }
 
 //Closes UserService Database Connection
