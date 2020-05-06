@@ -1,4 +1,4 @@
-package model
+package models
 
 import (
 	"errors"
@@ -44,6 +44,13 @@ func (us *UserService) ByID(id uint) (*User, error) {
 	default:
 		return nil, err
 	}
+}
+
+//Create will create the user and backfill data
+//like id,CreatedAt etc fields
+//and return error using gorm when we have one
+func (us *UserService) Create(user *User) error {
+	return us.db.Create(user).Error
 }
 
 //Closes UserService Database Connection
