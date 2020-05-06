@@ -16,23 +16,25 @@ type SignupForm struct {
 
 func NewUsers(us *models.UserService) *Users {
 	return &Users{
-		NewView: views.NewView("bootstrap", "users/new"),
-		us:      us,
+		NewView:   views.NewView("bootstrap", "users/new"),
+		LoginView: views.NewView("bootstrap", "users/login"),
+		us:        us,
 	}
 }
 
 type Users struct {
-	NewView *views.View
-	us      *models.UserService
+	NewView   *views.View
+	LoginView *views.View
+	us        *models.UserService
 }
 
 //New is used to render the form where user can create a new user account
 // GET /signup
-func (u *Users) New(w http.ResponseWriter, r *http.Request) {
-	if err := u.NewView.Render(w, nil); err != nil {
-		log.Println(err)
-	}
-}
+//func (u *Users) New(w http.ResponseWriter, r *http.Request) {
+//	if err := u.NewView.Render(w, nil); err != nil {
+//		log.Println(err)
+//	}
+//}
 
 // Create is used to process the sign up form
 //when user submits it.
@@ -56,4 +58,18 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, user)
 
+}
+
+type LoginForm struct {
+	Email    string `schema:"email"`
+	Password string `schema:"password"`
+}
+
+func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
+	form := LoginForm{}
+	err := parseForm(r, &form)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Fprintln(w, form)
 }
