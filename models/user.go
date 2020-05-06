@@ -13,8 +13,9 @@ type UserService struct {
 }
 
 var (
-	ErrorNotFound = errors.New("models:resource not found")
-	ErrInvalidId  = errors.New("models:Id Provided was invalid")
+	ErrorNotFound        = errors.New("models:resource not found")
+	ErrInvalidId         = errors.New("models:Id Provided was invalid")
+	ErrInvalidIdPassword = errors.New("models:Password Provided was invalid")
 )
 
 const userPwPepper = "secret-random-string"
@@ -50,6 +51,27 @@ func (us *UserService) ByEmail(email string) (*User, error) {
 	db := us.db.Where("email=?", email)
 	err := first(db, &user)
 	return &user, err
+
+}
+
+// Authenticate can be used to authenticate a user
+func (us *UserService) Authenticate(email, password string) (*User, error) {
+	foundUser, err := us.ByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(foundUser.PasswordHash), []byte(password+userPwPepper))
+
+	if err != nil {
+		switch err {
+		case bcrypt.ErrMismatchedHashAndPassword:
+			return nil, ErrInvalidIdPassword
+		default:
+			return nil, err
+		}
+	}
+
+	return foundUser, nil
 
 }
 
