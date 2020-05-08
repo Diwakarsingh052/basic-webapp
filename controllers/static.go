@@ -9,7 +9,6 @@ func NewStatic() *Static {
 	}
 }
 
-
 type Static struct {
 	Home    *views.View
 	Contact *views.View
