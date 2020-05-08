@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func testingUserService() (*UserService, error) {
+func testingUserService() (*userGorm, error) {
 	const (
 		host     = "localhost"
 		port     = 5432
