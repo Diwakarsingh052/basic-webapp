@@ -9,9 +9,13 @@ import (
 	"webdev/rand"
 )
 
-type UserService struct {
+var _ UserService = &userService{}
+
+type userService struct {
 	UserDB
 }
+
+var _ UserDB = &userValidator{}
 
 type userValidator struct {
 	UserDB
@@ -22,7 +26,7 @@ type userGorm struct {
 	hmac hash.HMAC
 }
 
-var _UserDB = &userGorm{}
+var _ UserDB = &userGorm{}
 var (
 	ErrorNotFound        = errors.New("models:resource not found")
 	ErrInvalidId         = errors.New("models:Id Provided was invalid")
@@ -52,6 +56,13 @@ type UserDB interface {
 	DestructiveReset() error
 }
 
+//UserService is set of methods used to manipulate and work with user model
+type UserService interface {
+	//It will authenticate provided email address and password are correct
+	Authenticate(email, password string) (*User, error)
+	UserDB
+}
+
 func newUserGorm(connectionInfo string) (*userGorm, error) {
 	db, err := gorm.Open("postgres", connectionInfo)
 	if err != nil {
@@ -68,13 +79,13 @@ func newUserGorm(connectionInfo string) (*userGorm, error) {
 	return nil, err
 }
 
-func NewUserService(connectionInfo string) (*UserService, error) {
+func NewUserService(connectionInfo string) (UserService, error) {
 	ug, err := newUserGorm(connectionInfo)
 	if err != nil {
 		return nil, err
 	}
 
-	return &UserService{
+	return &userService{
 		UserDB: &userValidator{UserDB: ug},
 	}, nil
 
@@ -114,7 +125,7 @@ func (ug *userGorm) ByRemember(token string) (*User, error) {
 }
 
 // Authenticate can be used to authenticate a user
-func (us *UserService) Authenticate(email, password string) (*User, error) {
+func (us *userService) Authenticate(email, password string) (*User, error) {
 	foundUser, err := us.ByEmail(email)
 	if err != nil {
 		return nil, err
