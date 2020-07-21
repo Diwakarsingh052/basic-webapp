@@ -7,11 +7,7 @@ import (
 	"hash"
 )
 
-type HMAC struct {
-	hmac hash.Hash
-}
-
-//NewHMAC creates and return a new HMAC Project
+// NewHMAC creates and returns a new HMAC object
 func NewHMAC(key string) HMAC {
 	h := hmac.New(sha256.New, []byte(key))
 	return HMAC{
@@ -19,8 +15,14 @@ func NewHMAC(key string) HMAC {
 	}
 }
 
-//Hash will hash the provided input string using HMAC
-//with the secret key provided when HMAC object was created
+// HMAC is a wrapper around the crypto/hmac package making
+// it a little easier to use in our code.
+type HMAC struct {
+	hmac hash.Hash
+}
+
+// Hash will hash the provided input string using HMAC with
+// the secret key provided when the HMAC object was created
 func (h HMAC) Hash(input string) string {
 	h.hmac.Reset()
 	h.hmac.Write([]byte(input))
