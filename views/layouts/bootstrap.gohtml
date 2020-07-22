@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>LensLocked.com</title>
+    <title>Golang</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
   </head>
 
@@ -10,7 +10,10 @@
     {{template "navbar"}}
 
     <div class="container-fluid">
-      {{template "yield" .}}
+      {{if .Alert}}
+        {{template "alert" .Alert}}
+      {{end}}
+      {{template "yield" .Yield}}
 
       {{template "footer"}}
     </div>
